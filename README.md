@@ -8,4 +8,4 @@
 
 1 star for each coding challenge completed.
 
-[https://adventofcode.com/2021](https://adventofcode.com/2022)
+[https://adventofcode.com/2022](https://adventofcode.com/2022)
