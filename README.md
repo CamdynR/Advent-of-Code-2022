@@ -1,8 +1,8 @@
 # Advent of Code - 2022
 
-![Seventh day](https://img.shields.io/badge/day%20-7-blue)
-![14 stars](https://img.shields.io/badge/stars%20⭐-14-orange)
-![7 days completed](https://img.shields.io/badge/days%20completed-7-purple)
+![Eighth day](https://img.shields.io/badge/day%20-8-blue)
+![16 stars](https://img.shields.io/badge/stars%20⭐-16-orange)
+![8 days completed](https://img.shields.io/badge/days%20completed-8-purple)
 
 2 coding challenges every day from December 1st through December 25th.
 
