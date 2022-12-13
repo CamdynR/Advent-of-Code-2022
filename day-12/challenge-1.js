@@ -1,8 +1,6 @@
-const TEST = false;
-const PC = false;
-const SETUP = { split: '\n', txt: 'real.txt' };
-if (PC) SETUP.split = '\r\n';
-if (TEST) SETUP.txt = 'test.txt';
+const SETUP = { split: '\r\n', txt: 'real.txt' };
+if (process.argv[3] == 'mac') SETUP.split = '\n';
+if (process.argv[2] == 'test') SETUP.txt = 'test.txt';
 const fs = require('fs');
 let input = fs.readFileSync(`${__dirname}/input-${SETUP.txt}`).toString();
 
@@ -26,11 +24,13 @@ for (let row = 0; row < input.length; row++) {
 }
 
 let finalPath;
+let shortestPath = Infinity;
 let queue = [[start]];
 while (queue.length > 0) {
   let path = queue.shift();
   let curr = path.at(-1);
-  if (curr[0] === end[0] && curr[1] === end[1]) {
+  if (curr[0] === end[0] && curr[1] === end[1] && path.length < shortestPath) {
+    shortestPath = path.length;
     finalPath = path;
   }
   if (visited[curr.toString()]) continue;
@@ -90,5 +90,4 @@ grid[end[0]][end[1]] = 'E';
 
 console.log(grid.map((r) => r.join('')).join('\n'));
 
-// console.log(finalPath);
-// console.log(finalPath.length - 1);
+console.log(`\nShortest Path Length: ${finalPath.length - 1}`);
