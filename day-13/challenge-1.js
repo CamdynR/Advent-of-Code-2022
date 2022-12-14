@@ -1,8 +1,8 @@
-const SETUP = { split: '\r\n', txt: 'real.txt' };
-if (process.argv[3] == 'mac') SETUP.split = '\n';
+const SETUP = { split: '\n', txt: 'real.txt' };
 if (process.argv[2] == 'test') SETUP.txt = 'test.txt';
 const fs = require('fs');
 let input = fs.readFileSync(`${__dirname}/input-${SETUP.txt}`).toString();
+input = input.replaceAll('\r', '');
 
 let packets = input
   .split(SETUP.split + SETUP.split)
@@ -11,44 +11,48 @@ packets = packets.map((packet) => {
   return { left: packet[0], right: packet[1] };
 });
 
-function compareItem(leftItem, rightItem) {
-  console.log(
-    `    compare item: ${JSON.stringify(leftItem)}, ${JSON.stringify(
-      rightItem
-    )}`
-  );
-  if (!Array.isArray(leftItem) && !Array.isArray(rightItem)) {
-    if (leftItem == rightItem) return 'continue';
-    if (leftItem < rightItem) return 'right order';
-    if (rightItem > leftItem) return 'wrong order';
-  } else {
-    if (!Array.isArray(leftItem)) leftItem = [leftItem];
-    if (!Array.isArray(rightItem)) rightItem = [rightItem];
-    let order = comparePacket(leftItem, rightItem);
-    if (order) {
-      return 'right order';
+function comparePacket(left, right, str) {
+  str = str === undefined ? '' : str;
+  console.log(`${str}- Compare ${JSON.stringify(left)} vs ${JSON.stringify(right)}`)
+  for (let i = 0; i < left.length; i++) {
+    if (i >= right.length) return false;
+    console.log(`${str}  - Compare ${JSON.stringify(left[i])} vs ${JSON.stringify(right[i])}`)
+    if (!Array.isArray(left[i]) && !Array.isArray(right[i])) {
+      if (left[i] < right[i]) {
+        console.log(`${str}    - Left side is smaller, so inputs are in the *right* order`);
+        return true;
+      }
+      if (left[i] > right[i]) {
+        console.log(`${str}    - Right side is smaller, so inputs are _not_ in the right order`);
+        return false;
+      }
     } else {
-      return 'wrong order';
+      let newLeft = left[i];
+      let newRight = right[i];
+      if (!Array.isArray(left[i]) && Array.isArray(right[i])) {
+        newLeft = [left[i]];
+        console.log(`${str}    - Mixed types; convert left to ${JSON.stringify(newLeft)} and retry comparison`);
+      }
+      if (!Array.isArray(right[i]) && Array.isArray(left[i])) {
+        newRight = [right[i]];
+        console.log(`${str}    - Mixed types; convert right to ${JSON.stringify(newRight)} and retry comparison`);
+      }
+      let comparison = comparePacket(newLeft, newRight, str+'    ');
+      if (comparison === undefined) continue;
+      if (comparison) return true;
+      if (!comparison) return false;
     }
   }
-}
-
-function comparePacket(left, right) {
-  console.log(
-    `compare packet: ${JSON.stringify(left)}, ${JSON.stringify(right)}`
-  );
-  for (let i = 0; i < left.length; i++) {
-    let comparison = compareItem(left[i], right[i]);
-    if (comparison == 'right order') return true;
-    if (comparison == 'wrong order') return false;
-  }
-  return left.length < right.length;
+  if (left.length < right.length) return true;
+  if (left.length > right.length) return false;
 }
 
 let inRightOrder = [];
 packets.forEach((packet, i) => {
+  console.log(`== Pair ${i+1} ==`);
   if (comparePacket(packet.left, packet.right)) inRightOrder.push(i + 1);
+  console.log('');
 });
 
 console.log(inRightOrder);
-// console.log(`Right Order Sum: ${inRightOrder.reduce((a,b) => a + b)}`);
+console.log(`Right Order Sum: ${inRightOrder.reduce((a,b) => a + b)}`);
